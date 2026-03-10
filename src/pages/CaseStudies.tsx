@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { ArrowRight } from "lucide-react";
+import { fadeUp, staggerContainer, heroStagger, heroChild, viewport } from "@/lib/motion";
 
 const placeholderStudies = [
   { title: "AI-Powered Customer Support Platform", industry: "SaaS", challenge: "High support ticket volume with slow response times.", solution: "Built an AI chatbot with NLP that handles 70% of queries automatically.", result: "60% reduction in response time, 40% cost savings." },
@@ -14,26 +15,23 @@ const CaseStudies = () => {
     <PageLayout>
       <section className="hero-bg text-primary-foreground section-padding py-24 md:py-32">
         <div className="container-narrow text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Case Studies</p>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6">Our Work in Action</h1>
-            <p className="text-lg opacity-70 max-w-2xl mx-auto">
+          <motion.div variants={heroStagger} initial="hidden" animate="visible">
+            <motion.p variants={heroChild} className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Case Studies</motion.p>
+            <motion.h1 variants={heroChild} className="text-4xl md:text-5xl font-extrabold mb-6">Our Work in Action</motion.h1>
+            <motion.p variants={heroChild} className="text-lg opacity-70 max-w-2xl mx-auto">
               See how we've helped businesses transform their operations with intelligent technology solutions.
-            </p>
+            </motion.p>
           </motion.div>
         </div>
       </section>
 
       <section className="section-padding">
-        <div className="container-narrow space-y-8">
-          {placeholderStudies.map((study, i) => (
+        <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={viewport} className="container-narrow space-y-8">
+          {placeholderStudies.map((study) => (
             <motion.div
               key={study.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className="rounded-xl border border-border bg-card p-8 md:p-10"
+              variants={fadeUp}
+              className="rounded-xl border border-border bg-card p-8 md:p-10 transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
             >
               <span className="text-xs font-semibold text-accent uppercase tracking-wider">{study.industry}</span>
               <h3 className="text-2xl font-bold mt-2 mb-4">{study.title}</h3>
@@ -53,16 +51,18 @@ const CaseStudies = () => {
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       <section className="section-padding section-alt-bg">
         <div className="container-narrow text-center">
-          <h2 className="text-3xl font-bold mb-4">Want results like these?</h2>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">Let's discuss how we can help your business achieve similar transformations.</p>
-          <Link to="/contact" className="inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground hover:opacity-90">
-            Book a Consultation <ArrowRight size={16} />
-          </Link>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewport}>
+            <h2 className="text-3xl font-bold mb-4">Want results like these?</h2>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">Let's discuss how we can help your business achieve similar transformations.</p>
+            <Link to="/contact" className="group inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:shadow-lg hover:shadow-accent/20 hover:-translate-y-0.5 active:translate-y-0">
+              Book a Consultation <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+            </Link>
+          </motion.div>
         </div>
       </section>
     </PageLayout>
