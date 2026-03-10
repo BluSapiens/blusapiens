@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Shield, Cpu, Boxes, TrendingUp, Wrench, Users } from "lucide-react";
+import { fadeUp, staggerContainer, viewport } from "@/lib/motion";
 
 const reasons = [
   { icon: Cpu, title: "Technology-First Approach", description: "We lead with engineering excellence, not just strategy decks." },
@@ -15,10 +16,10 @@ const WhyChooseUs = () => {
     <section className="section-padding section-alt-bg">
       <div className="container-narrow">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
           className="text-center mb-16"
         >
           <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Why BluSapiens</p>
@@ -28,16 +29,15 @@ const WhyChooseUs = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {reasons.map((r, i) => (
-            <motion.div
-              key={r.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.08 }}
-              className="flex gap-4"
-            >
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {reasons.map((r) => (
+            <motion.div key={r.title} variants={fadeUp} className="flex gap-4">
               <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-accent/10 text-accent flex items-center justify-center mt-0.5">
                 <r.icon size={20} />
               </div>
@@ -47,7 +47,7 @@ const WhyChooseUs = () => {
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
