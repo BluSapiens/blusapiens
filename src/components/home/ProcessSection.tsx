@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { fadeUp, staggerContainer, viewport } from "@/lib/motion";
 
 const steps = [
   { number: "01", title: "Discovery", description: "Understand your business challenges, goals, and technical landscape." },
@@ -13,10 +14,10 @@ const ProcessSection = () => {
     <section className="section-padding">
       <div className="container-narrow">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
           className="text-center mb-16"
         >
           <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Our Process</p>
@@ -27,36 +28,33 @@ const ProcessSection = () => {
         </motion.div>
 
         <div className="relative">
-          {/* Vertical line */}
           <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-border md:-translate-x-px" />
 
-          <div className="space-y-12">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewport}
+            className="space-y-12"
+          >
             {steps.map((step, i) => (
               <motion.div
                 key={step.number}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.1 }}
+                variants={fadeUp}
                 className={`relative flex items-start gap-6 md:gap-12 ${
                   i % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
                 }`}
               >
-                {/* Dot */}
                 <div className="absolute left-6 md:left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-accent border-2 border-background z-10 mt-1.5" />
-
-                {/* Content */}
                 <div className={`ml-14 md:ml-0 md:w-1/2 ${i % 2 === 0 ? "md:text-right md:pr-12" : "md:pl-12"}`}>
                   <span className="text-xs font-bold text-accent">{step.number}</span>
                   <h3 className="font-bold text-lg mt-1 mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{step.description}</p>
                 </div>
-
-                {/* Spacer for alternating layout */}
                 <div className="hidden md:block md:w-1/2" />
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>

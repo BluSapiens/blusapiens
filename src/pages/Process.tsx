@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { ArrowRight, Search, Map, Code, TestTube, Rocket } from "lucide-react";
+import { fadeUp, staggerContainer, heroStagger, heroChild, viewport } from "@/lib/motion";
 
 const steps = [
   { icon: Search, number: "01", title: "Discovery & Research", description: "We dive deep into your business, goals, challenges, and technical landscape. Through stakeholder interviews and analysis, we map out exactly what needs to happen.", details: ["Stakeholder interviews", "Business process analysis", "Technical audit", "Competitive landscape review"] },
@@ -16,28 +17,25 @@ const Process = () => {
     <PageLayout>
       <section className="hero-bg text-primary-foreground section-padding py-24 md:py-32">
         <div className="container-narrow text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">How We Work</p>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6">Our Process</h1>
-            <p className="text-lg opacity-70 max-w-2xl mx-auto">
+          <motion.div variants={heroStagger} initial="hidden" animate="visible">
+            <motion.p variants={heroChild} className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">How We Work</motion.p>
+            <motion.h1 variants={heroChild} className="text-4xl md:text-5xl font-extrabold mb-6">Our Process</motion.h1>
+            <motion.p variants={heroChild} className="text-lg opacity-70 max-w-2xl mx-auto">
               A structured, proven approach that transforms your ideas into reliable, scalable digital solutions.
-            </p>
+            </motion.p>
           </motion.div>
         </div>
       </section>
 
       <section className="section-padding">
-        <div className="container-narrow space-y-16">
+        <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={viewport} className="container-narrow space-y-16">
           {steps.map((step, i) => (
             <motion.div
               key={step.number}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              variants={fadeUp}
               className={`flex flex-col md:flex-row gap-8 items-start ${i % 2 !== 0 ? "md:flex-row-reverse" : ""}`}
             >
-              <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-accent/10 text-accent flex items-center justify-center">
+              <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-accent/10 text-accent flex items-center justify-center transition-transform duration-200 hover:scale-105">
                 <step.icon size={28} />
               </div>
               <div className="flex-1">
@@ -52,16 +50,18 @@ const Process = () => {
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
       <section className="section-padding section-alt-bg">
         <div className="container-narrow text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to start your project?</h2>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">Let's work together to build something exceptional.</p>
-          <Link to="/contact" className="inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground hover:opacity-90">
-            Book a Consultation <ArrowRight size={16} />
-          </Link>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewport}>
+            <h2 className="text-3xl font-bold mb-4">Ready to start your project?</h2>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">Let's work together to build something exceptional.</p>
+            <Link to="/contact" className="group inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:shadow-lg hover:shadow-accent/20 hover:-translate-y-0.5 active:translate-y-0">
+              Book a Consultation <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+            </Link>
+          </motion.div>
         </div>
       </section>
     </PageLayout>

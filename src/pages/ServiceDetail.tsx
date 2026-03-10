@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import PageLayout from "@/components/layout/PageLayout";
 import { Brain, Globe, Lightbulb, BarChart3, Code2, Layers, ArrowRight, Check } from "lucide-react";
+import { fadeUp, staggerContainer, heroStagger, heroChild, viewport } from "@/lib/motion";
 import type { LucideIcon } from "lucide-react";
 
 interface ServiceData {
@@ -92,35 +93,32 @@ const ServiceDetail = () => {
 
   return (
     <PageLayout>
-      {/* Hero */}
       <section className="hero-bg text-primary-foreground section-padding py-24 md:py-32">
         <div className="container-narrow">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="flex items-center gap-3 mb-6">
+          <motion.div variants={heroStagger} initial="hidden" animate="visible">
+            <motion.div variants={heroChild} className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 rounded-lg bg-accent/20 text-accent flex items-center justify-center">
                 <Icon size={24} />
               </div>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-4">{service.title}</h1>
-            <p className="text-xl opacity-70 max-w-2xl">{service.tagline}</p>
+            </motion.div>
+            <motion.h1 variants={heroChild} className="text-4xl md:text-5xl font-extrabold mb-4">{service.title}</motion.h1>
+            <motion.p variants={heroChild} className="text-xl opacity-70 max-w-2xl">{service.tagline}</motion.p>
           </motion.div>
         </div>
       </section>
 
-      {/* Overview */}
       <section className="section-padding">
         <div className="container-narrow max-w-3xl">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewport}>
             <h2 className="text-2xl font-bold mb-4">Overview</h2>
             <p className="text-muted-foreground leading-relaxed text-lg">{service.overview}</p>
           </motion.div>
         </div>
       </section>
 
-      {/* Problems & Solutions */}
       <section className="section-padding section-alt-bg">
-        <div className="container-narrow grid grid-cols-1 md:grid-cols-2 gap-12">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+        <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={viewport} className="container-narrow grid grid-cols-1 md:grid-cols-2 gap-12">
+          <motion.div variants={fadeUp}>
             <h2 className="text-2xl font-bold mb-6">Problems We Solve</h2>
             <ul className="space-y-3">
               {service.problems.map((p) => (
@@ -131,7 +129,7 @@ const ServiceDetail = () => {
               ))}
             </ul>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
+          <motion.div variants={fadeUp}>
             <h2 className="text-2xl font-bold mb-6">Our Solutions</h2>
             <ul className="space-y-3">
               {service.solutions.map((s) => (
@@ -142,13 +140,12 @@ const ServiceDetail = () => {
               ))}
             </ul>
           </motion.div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* Features & Benefits */}
       <section className="section-padding">
-        <div className="container-narrow grid grid-cols-1 md:grid-cols-2 gap-12">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+        <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={viewport} className="container-narrow grid grid-cols-1 md:grid-cols-2 gap-12">
+          <motion.div variants={fadeUp}>
             <h2 className="text-2xl font-bold mb-6">Key Features</h2>
             <ul className="space-y-3">
               {service.features.map((f) => (
@@ -159,46 +156,46 @@ const ServiceDetail = () => {
               ))}
             </ul>
           </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}>
+          <motion.div variants={fadeUp}>
             <h2 className="text-2xl font-bold mb-6">Benefits</h2>
             <ul className="space-y-3">
-              {service.features.map((_, i) => (
-                <li key={service.benefits[i]} className="flex gap-3">
+              {service.benefits.map((b) => (
+                <li key={b} className="flex gap-3">
                   <Check size={18} className="text-accent mt-0.5 flex-shrink-0" />
-                  <span>{service.benefits[i]}</span>
+                  <span>{b}</span>
                 </li>
               ))}
             </ul>
           </motion.div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* Use Cases */}
       <section className="section-padding section-alt-bg">
         <div className="container-narrow">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewport} className="text-center mb-12">
             <h2 className="text-2xl font-bold">Example Use Cases</h2>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {service.useCases.map((uc, i) => (
-              <motion.div key={uc} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
-                className="rounded-xl border border-border bg-card p-6"
+          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={viewport} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {service.useCases.map((uc) => (
+              <motion.div key={uc} variants={fadeUp}
+                className="rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
               >
                 <p className="font-medium">{uc}</p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* CTA */}
       <section className="section-padding">
         <div className="container-narrow text-center">
-          <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto">Let's discuss how we can help transform your business with {service.title.toLowerCase()}.</p>
-          <Link to="/contact" className="inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground hover:opacity-90">
-            Book a Consultation <ArrowRight size={16} />
-          </Link>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewport}>
+            <h2 className="text-3xl font-bold mb-4">Ready to get started?</h2>
+            <p className="text-muted-foreground mb-8 max-w-md mx-auto">Let's discuss how we can help transform your business with {service.title.toLowerCase()}.</p>
+            <Link to="/contact" className="group inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:shadow-lg hover:shadow-accent/20 hover:-translate-y-0.5 active:translate-y-0">
+              Book a Consultation <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+            </Link>
+          </motion.div>
         </div>
       </section>
     </PageLayout>

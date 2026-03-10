@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Rocket, Building2, ShoppingCart, HeartPulse, Landmark, Truck, GraduationCap } from "lucide-react";
+import { scaleIn, staggerContainer, viewport } from "@/lib/motion";
 
 const industries = [
   { icon: Rocket, label: "Startups" },
@@ -16,10 +17,10 @@ const IndustriesSection = () => {
     <section className="section-padding section-alt-bg">
       <div className="container-narrow">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          variants={scaleIn}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
           className="text-center mb-14"
         >
           <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Industries</p>
@@ -29,21 +30,24 @@ const IndustriesSection = () => {
           </p>
         </motion.div>
 
-        <div className="flex flex-wrap justify-center gap-4">
-          {industries.map((ind, i) => (
+        <motion.div
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewport}
+          className="flex flex-wrap justify-center gap-4"
+        >
+          {industries.map((ind) => (
             <motion.div
               key={ind.label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="flex items-center gap-3 rounded-full border border-border bg-card px-6 py-3"
+              variants={scaleIn}
+              className="flex items-center gap-3 rounded-full border border-border bg-card px-6 py-3 transition-all duration-200 hover:border-accent/30 hover:shadow-sm"
             >
               <ind.icon size={18} className="text-accent" />
               <span className="text-sm font-medium">{ind.label}</span>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
