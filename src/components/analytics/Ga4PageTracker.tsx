@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
-const MEASUREMENT_ID = "G-GFLRT0JG22";
+const MEASUREMENT_ID = "G-LS4SCRXWR0";
 
 const Ga4PageTracker = () => {
   const location = useLocation();
