@@ -46,7 +46,7 @@ const Footer = () => {
                 alt="BluSapiens logo"
                 width={1184}
                 height={864}
-                className="logo-pixel h-16 w-auto shrink-0"
+                className="logo-pixel h-21 w-auto shrink-0"
               />
               <span className="font-heading font-bold text-xl">
                 <span className="text-accent">Blu</span>Sapiens

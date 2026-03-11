@@ -42,7 +42,7 @@ const Navbar = () => {
             alt="BluSapiens logo"
             width={1184}
             height={864}
-            className="logo-pixel h-14 w-auto shrink-0"
+            className="logo-pixel h-16 w-auto shrink-0"
           />
           <span className="font-heading font-bold text-xl text-foreground">
             <span className="text-accent">Blu</span>Sapiens
