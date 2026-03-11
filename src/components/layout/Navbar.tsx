@@ -36,8 +36,17 @@ const Navbar = () => {
       }`}
     >
       <nav className="container-wide flex items-center justify-between h-16 px-6 md:px-8 lg:px-12">
-        <Link to="/" className="flex items-center gap-2 font-heading font-bold text-xl text-foreground">
-          <span className="text-accent">Blu</span>Sapiens
+        <Link to="/" className="flex items-center gap-3" aria-label="BluSapiens home">
+          <img
+            src="/blusapiens.svg"
+            alt="BluSapiens logo"
+            width={1184}
+            height={864}
+            className="logo-pixel h-14 w-auto shrink-0"
+          />
+          <span className="font-heading font-bold text-xl text-foreground">
+            <span className="text-accent">Blu</span>Sapiens
+          </span>
         </Link>
 
         <div className="hidden md:flex items-center gap-8">
