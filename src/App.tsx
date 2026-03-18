@@ -15,6 +15,7 @@ import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Contact from "./pages/Contact";
 import Careers from "./pages/Careers";
+import Tools from "./pages/Tools";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/services/:slug" element={<ServiceDetail />} />
           <Route path="/process" element={<Process />} />
           <Route path="/case-studies" element={<CaseStudies />} />
+          <Route path="/tools" element={<Tools />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogArticle />} />
           <Route path="/contact" element={<Contact />} />

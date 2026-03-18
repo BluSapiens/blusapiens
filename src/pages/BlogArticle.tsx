@@ -1,10 +1,20 @@
-import { useParams, Link } from "react-router-dom";
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Bookmark,
+  ChevronRight,
+  Clock,
+  Linkedin,
+  Mail,
+  Share2,
+  Sparkles,
+} from "lucide-react";
 import PageLayout from "@/components/layout/PageLayout";
-import { ArrowLeft, ArrowRight, Clock, ChevronRight, Linkedin, Mail, Share2 } from "lucide-react";
-import { fadeUp, heroStagger, heroChild, staggerContainer, viewport } from "@/lib/motion";
-import { getPostBySlug, getRelatedPosts, blogPosts, type BlogPost } from "@/lib/blog-data";
+import { fadeUp, heroChild, heroStagger, staggerContainer, viewport } from "@/lib/motion";
+import { blogPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog-data";
 
 const ReadingProgress = () => {
   const [progress, setProgress] = useState(0);
@@ -15,14 +25,15 @@ const ReadingProgress = () => {
       const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
     };
+
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <div className="fixed top-16 left-0 right-0 z-40 h-0.5 bg-border">
+    <div className="fixed left-0 right-0 top-16 z-40 h-0.5 bg-border">
       <motion.div
-        className="h-full bg-accent"
+        className="h-full bg-gradient-to-r from-accent to-cyan-300"
         style={{ width: `${progress}%` }}
         transition={{ duration: 0.05 }}
       />
@@ -31,18 +42,20 @@ const ReadingProgress = () => {
 };
 
 const TableOfContents = ({ headings, activeIndex }: { headings: string[]; activeIndex: number }) => (
-  <nav className="sticky top-24">
-    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">On this page</p>
+  <nav className="rounded-[1.5rem] border border-border/80 bg-card/90 p-5 shadow-[0_18px_50px_-40px_rgba(15,23,42,0.45)]">
+    <p className="mb-4 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">On this page</p>
     <ul className="space-y-2">
-      {headings.map((h, i) => (
-        <li key={i}>
+      {headings.map((heading, index) => (
+        <li key={heading}>
           <a
-            href={`#section-${i}`}
-            className={`block text-sm transition-colors duration-200 ${
-              activeIndex === i ? "text-accent font-medium" : "text-muted-foreground hover:text-foreground"
+            href={`#section-${index}`}
+            className={`block rounded-xl px-3 py-2 text-sm transition-colors duration-200 ${
+              activeIndex === index
+                ? "bg-accent/10 font-medium text-accent"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
             }`}
           >
-            {h}
+            {heading}
           </a>
         </li>
       ))}
@@ -57,37 +70,40 @@ const BlogArticle = () => {
 
   useEffect(() => {
     if (!post) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const idx = Number(entry.target.getAttribute("data-index"));
-            if (!isNaN(idx)) setActiveSection(idx);
+            const index = Number(entry.target.getAttribute("data-index"));
+            if (!Number.isNaN(index)) setActiveSection(index);
           }
         });
       },
       { rootMargin: "-100px 0px -60% 0px" }
     );
-    post.headings.forEach((_, i) => {
-      const el = document.getElementById(`section-${i}`);
-      if (el) observer.observe(el);
+
+    post.headings.forEach((_, index) => {
+      const element = document.getElementById(`section-${index}`);
+      if (element) observer.observe(element);
     });
+
     return () => observer.disconnect();
   }, [post]);
 
-  const relatedPosts = useMemo(() => post ? getRelatedPosts(post) : [], [post]);
-
-  // Navigation
-  const currentIndex = post ? blogPosts.findIndex(p => p.id === post.id) : -1;
+  const relatedPosts = useMemo(() => (post ? getRelatedPosts(post) : []), [post]);
+  const currentIndex = post ? blogPosts.findIndex((item) => item.id === post.id) : -1;
   const prevPost = currentIndex > 0 ? blogPosts[currentIndex - 1] : null;
-  const nextPost = currentIndex < blogPosts.length - 1 ? blogPosts[currentIndex + 1] : null;
+  const nextPost = currentIndex >= 0 && currentIndex < blogPosts.length - 1 ? blogPosts[currentIndex + 1] : null;
 
   if (!post) {
     return (
       <PageLayout>
-        <div className="section-padding container-narrow text-center">
-          <h1 className="text-2xl font-bold mb-4">Article not found</h1>
-          <Link to="/blog" className="text-accent hover:underline">Back to Blog</Link>
+        <div className="container-narrow section-padding text-center">
+          <h1 className="mb-4 text-2xl font-bold">Article not found</h1>
+          <Link to="/blog" className="text-accent hover:underline">
+            Back to Blog
+          </Link>
         </div>
       </PageLayout>
     );
@@ -97,194 +113,286 @@ const BlogArticle = () => {
     <PageLayout>
       <ReadingProgress />
 
-      {/* Header */}
-      <section className="hero-bg text-primary-foreground section-padding py-20 md:py-28">
-        <div className="container-narrow max-w-3xl">
+      <section className="hero-bg relative overflow-hidden text-primary-foreground section-padding py-20 md:py-28">
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage: "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
+            backgroundSize: "34px 34px",
+          }}
+        />
+        <div
+          className="absolute right-[-8%] top-[-12%] h-72 w-72 rounded-full opacity-20 blur-3xl"
+          style={{ background: "radial-gradient(circle, hsl(var(--accent)), transparent 70%)" }}
+        />
+
+        <div className="container-narrow relative z-10 max-w-4xl">
           <motion.div variants={heroStagger} initial="hidden" animate="visible">
-            {/* Breadcrumb */}
-            <motion.div variants={heroChild} className="flex items-center gap-2 text-xs text-primary-foreground/50 mb-6">
-              <Link to="/blog" className="hover:text-accent transition-colors duration-200">Blog</Link>
+            <motion.div variants={heroChild} className="mb-6 flex items-center gap-2 text-xs text-primary-foreground/55">
+              <Link to="/blog" className="transition-colors duration-200 hover:text-accent">
+                Blog
+              </Link>
               <ChevronRight size={12} />
-              <span className="text-primary-foreground/70">{post.category}</span>
+              <span className="text-primary-foreground/75">{post.category}</span>
             </motion.div>
 
-            <motion.span variants={heroChild} className="text-xs font-semibold text-accent uppercase tracking-wider">{post.category}</motion.span>
-            <motion.h1 variants={heroChild} className="text-3xl md:text-4xl lg:text-5xl font-extrabold mt-2 mb-4 leading-tight">{post.title}</motion.h1>
-            <motion.p variants={heroChild} className="text-lg opacity-70 mb-6">{post.excerpt}</motion.p>
+            <motion.div variants={heroChild} className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-xs font-medium">
+              <Sparkles size={14} className="text-accent" />
+              BluSapiens Journal
+            </motion.div>
+            <motion.span variants={heroChild} className="inline-flex rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-accent">
+              {post.category}
+            </motion.span>
+            <motion.h1 variants={heroChild} className="mt-4 text-3xl font-extrabold leading-tight md:text-4xl lg:text-5xl">
+              {post.title}
+            </motion.h1>
+            <motion.p variants={heroChild} className="mb-8 mt-4 max-w-3xl text-lg leading-relaxed opacity-70">
+              {post.excerpt}
+            </motion.p>
 
-            <motion.div variants={heroChild} className="flex flex-wrap items-center gap-4 text-sm opacity-60">
+            <motion.div variants={heroChild} className="flex flex-wrap items-center gap-4 text-sm opacity-70">
               <span>{post.author.name}</span>
-              <span>·</span>
-              <span>{new Date(post.publishDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
-              <span>·</span>
-              <span className="flex items-center gap-1"><Clock size={14} />{post.readingTime}</span>
+              <span>|</span>
+              <span>
+                {new Date(post.publishDate).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </span>
+              <span>|</span>
+              <span className="inline-flex items-center gap-1">
+                <Clock size={14} />
+                {post.readingTime}
+              </span>
+            </motion.div>
+
+            <motion.div variants={heroChild} className="mt-8 flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <span key={tag} className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-primary-foreground/75">
+                  #{tag}
+                </span>
+              ))}
             </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Content */}
       <section className="section-padding">
         <div className="container-narrow">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-12">
-            {/* Article body */}
+          <div className="mb-8">
+            <Link
+              to="/blog"
+              className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-accent"
+            >
+              <ArrowLeft size={16} />
+              Back to Journal
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_260px]">
             <motion.article
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
-              className="max-w-none"
+              className="rounded-[2rem] border border-border/80 bg-card/95 p-6 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)] md:p-8 lg:p-10"
             >
-              {post.headings.map((heading, i) => (
-                <motion.div key={i} variants={fadeUp} className="mb-10">
-                  <h2
-                    id={`section-${i}`}
-                    data-index={i}
-                    className="text-xl md:text-2xl font-bold mb-4 scroll-mt-24"
-                  >
-                    {heading}
-                  </h2>
-                  {post.body[i] && (
-                    <p className="text-muted-foreground leading-[1.8] text-[15px]">{post.body[i]}</p>
-                  )}
-                </motion.div>
-              ))}
+              <div className="mb-10 flex flex-wrap items-center justify-between gap-4 rounded-[1.5rem] border border-border/70 bg-secondary/40 p-5">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">Article snapshot</p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Written for operators, founders, and teams shaping better digital systems.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5">
+                    <Clock size={12} />
+                    {post.readingTime}
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5">
+                    <Bookmark size={12} />
+                    {post.category}
+                  </span>
+                </div>
+              </div>
 
-              {/* Remaining paragraphs */}
-              {post.body.slice(post.headings.length).map((para, i) => (
-                <motion.p key={`extra-${i}`} variants={fadeUp} className="text-muted-foreground leading-[1.8] text-[15px] mb-6">
-                  {para}
-                </motion.p>
-              ))}
+              <div className="article-content max-w-none">
+                {post.headings.map((heading, index) => (
+                  <motion.div key={heading} variants={fadeUp} className="mb-10">
+                    <h2 id={`section-${index}`} data-index={index} className="scroll-mt-24">
+                      {heading}
+                    </h2>
+                    {post.body[index] ? <p>{post.body[index]}</p> : null}
+                  </motion.div>
+                ))}
 
-              {/* FAQ */}
-              {post.faqs && post.faqs.length > 0 && (
-                <motion.div variants={fadeUp} className="mt-12 pt-8 border-t border-border">
-                  <h2 className="text-xl font-bold mb-6">Frequently Asked Questions</h2>
-                  <div className="space-y-6">
-                    {post.faqs.map((faq, i) => (
-                      <details key={i} className="group rounded-lg border border-border bg-card overflow-hidden">
-                        <summary className="flex items-center justify-between p-5 cursor-pointer text-sm font-semibold hover:text-accent transition-colors duration-200">
+                {post.body.slice(post.headings.length).map((paragraph, index) => (
+                  <motion.p key={`extra-${index}`} variants={fadeUp}>
+                    {paragraph}
+                  </motion.p>
+                ))}
+              </div>
+
+              {post.faqs && post.faqs.length > 0 ? (
+                <motion.div variants={fadeUp} className="mt-12 border-t border-border pt-8">
+                  <h2 className="mb-6 text-xl font-bold">Frequently Asked Questions</h2>
+                  <div className="space-y-4">
+                    {post.faqs.map((faq) => (
+                      <details key={faq.question} className="group overflow-hidden rounded-[1.25rem] border border-border bg-card">
+                        <summary className="flex cursor-pointer items-center justify-between p-5 text-sm font-semibold transition-colors duration-200 hover:text-accent">
                           {faq.question}
                           <ChevronRight size={16} className="text-muted-foreground transition-transform duration-200 group-open:rotate-90" />
                         </summary>
-                        <div className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed">
-                          {faq.answer}
-                        </div>
+                        <div className="px-5 pb-5 text-sm leading-relaxed text-muted-foreground">{faq.answer}</div>
                       </details>
                     ))}
                   </div>
                 </motion.div>
-              )}
+              ) : null}
 
-              {/* Author */}
-              <motion.div variants={fadeUp} className="mt-12 pt-8 border-t border-border">
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center flex-shrink-0">
-                    <span className="font-bold text-sm">{post.author.name.charAt(0)}</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">{post.author.name}</p>
-                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{post.author.bio}</p>
-                    {post.author.linkedin && (
-                      <a href={post.author.linkedin} className="inline-flex items-center gap-1 text-xs text-accent mt-2 hover:underline">
-                        <Linkedin size={12} /> LinkedIn
-                      </a>
-                    )}
+              <motion.div variants={fadeUp} className="mt-12 border-t border-border pt-8">
+                <div className="rounded-[1.5rem] border border-border/80 bg-secondary/35 p-6">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">About the author</p>
+                  <div className="mt-4 flex gap-4">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+                      <span className="text-sm font-bold">{post.author.name.charAt(0)}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">{post.author.name}</p>
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{post.author.bio}</p>
+                      {post.author.linkedin ? (
+                        <a href={post.author.linkedin} className="mt-2 inline-flex items-center gap-1 text-xs text-accent hover:underline">
+                          <Linkedin size={12} />
+                          LinkedIn
+                        </a>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </motion.div>
 
-              {/* Prev/Next */}
-              <div className="mt-12 pt-8 border-t border-border grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="mt-12 grid grid-cols-1 gap-4 border-t border-border pt-8 sm:grid-cols-2">
                 {prevPost ? (
                   <Link
                     to={`/blog/${prevPost.slug}`}
-                    className="group rounded-lg border border-border p-4 transition-all duration-200 hover:border-accent/30"
+                    className="group rounded-[1.25rem] border border-border p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30 hover:bg-secondary/40"
                   >
-                    <span className="text-xs text-muted-foreground">← Previous</span>
-                    <p className="text-sm font-semibold mt-1 group-hover:text-accent transition-colors duration-200 line-clamp-2">{prevPost.title}</p>
+                    <span className="text-xs text-muted-foreground">Previous</span>
+                    <p className="mt-1 line-clamp-2 text-sm font-semibold transition-colors duration-200 group-hover:text-accent">
+                      {prevPost.title}
+                    </p>
                   </Link>
-                ) : <div />}
-                {nextPost && (
+                ) : (
+                  <div />
+                )}
+
+                {nextPost ? (
                   <Link
                     to={`/blog/${nextPost.slug}`}
-                    className="group rounded-lg border border-border p-4 text-right transition-all duration-200 hover:border-accent/30"
+                    className="group rounded-[1.25rem] border border-border p-4 text-right transition-all duration-200 hover:-translate-y-0.5 hover:border-accent/30 hover:bg-secondary/40"
                   >
-                    <span className="text-xs text-muted-foreground">Next →</span>
-                    <p className="text-sm font-semibold mt-1 group-hover:text-accent transition-colors duration-200 line-clamp-2">{nextPost.title}</p>
+                    <span className="text-xs text-muted-foreground">Next</span>
+                    <p className="mt-1 line-clamp-2 text-sm font-semibold transition-colors duration-200 group-hover:text-accent">
+                      {nextPost.title}
+                    </p>
                   </Link>
-                )}
+                ) : null}
               </div>
             </motion.article>
 
-            {/* Sidebar (TOC) */}
             <aside className="hidden lg:block">
-              <TableOfContents headings={post.headings} activeIndex={activeSection} />
+              <div className="sticky top-24 space-y-5">
+                <TableOfContents headings={post.headings} activeIndex={activeSection} />
+
+                <div className="rounded-[1.5rem] border border-border/80 bg-primary p-5 text-primary-foreground shadow-[0_20px_60px_-40px_rgba(15,23,42,0.7)]">
+                  <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-accent">
+                    <Mail size={18} />
+                  </div>
+                  <h3 className="text-lg font-bold">Want more like this?</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-primary-foreground/70">
+                    Subscribe for practical updates on AI, systems, product, and growth.
+                  </p>
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    className="mt-4 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                  <button className="mt-3 w-full rounded-2xl bg-accent px-4 py-3 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-accent/20">
+                    Subscribe
+                  </button>
+                </div>
+
+                <div className="rounded-[1.5rem] border border-border/80 bg-card/90 p-5">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.24em] text-muted-foreground">Share</p>
+                  <button className="inline-flex items-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm text-foreground transition-colors duration-200 hover:bg-accent/10 hover:text-accent">
+                    <Share2 size={14} />
+                    Share article
+                  </button>
+                </div>
+              </div>
             </aside>
           </div>
 
-          {/* Related */}
-          {relatedPosts.length > 0 && (
+          {relatedPosts.length > 0 ? (
             <motion.div
               variants={staggerContainer}
               initial="hidden"
               whileInView="visible"
               viewport={viewport}
-              className="mt-20 pt-12 border-t border-border"
+              className="mt-20 border-t border-border pt-12"
             >
-              <motion.h2 variants={fadeUp} className="text-2xl font-bold mb-8">Related Articles</motion.h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedPosts.map((rp) => (
-                  <motion.div key={rp.id} variants={fadeUp}>
+              <motion.h2 variants={fadeUp} className="mb-8 text-2xl font-bold">
+                Related Articles
+              </motion.h2>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                {relatedPosts.map((relatedPost) => (
+                  <motion.div key={relatedPost.id} variants={fadeUp}>
                     <Link
-                      to={`/blog/${rp.slug}`}
-                      className="group block rounded-xl border border-border bg-card p-6 transition-all duration-200 hover:border-accent/30 hover:shadow-lg hover:shadow-accent/5 hover:-translate-y-1"
+                      to={`/blog/${relatedPost.slug}`}
+                      className="group block rounded-[1.5rem] border border-border bg-card p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/30 hover:shadow-[0_22px_70px_-38px_rgba(6,182,212,0.25)]"
                     >
-                      <span className="text-xs font-semibold text-accent uppercase tracking-wider">{rp.category}</span>
-                      <h3 className="font-bold mt-2 mb-2 group-hover:text-accent transition-colors duration-200 line-clamp-2">{rp.title}</h3>
-                      <p className="text-xs text-muted-foreground">{rp.readingTime}</p>
+                      <span className="inline-flex rounded-full bg-accent/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">
+                        {relatedPost.category}
+                      </span>
+                      <h3 className="mt-3 line-clamp-2 font-bold transition-colors duration-200 group-hover:text-accent">
+                        {relatedPost.title}
+                      </h3>
+                      <p className="mt-3 text-xs text-muted-foreground">{relatedPost.readingTime}</p>
                     </Link>
                   </motion.div>
                 ))}
               </div>
             </motion.div>
-          )}
+          ) : null}
 
-          {/* Newsletter + CTA */}
           <motion.div
             variants={fadeUp}
             initial="hidden"
             whileInView="visible"
             viewport={viewport}
-            className="mt-16 rounded-xl border border-border bg-card p-8 md:p-10 text-center"
+            className="mt-16 rounded-[2rem] border border-border/80 bg-secondary/35 p-8 text-center md:p-10"
           >
-            <h3 className="text-xl font-bold mb-2">Stay informed</h3>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+            <h3 className="mb-2 text-xl font-bold">Stay informed</h3>
+            <p className="mx-auto mb-6 max-w-md text-sm text-muted-foreground">
               Get insights on AI, digital transformation, and technology strategy.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto">
+            <div className="mx-auto flex max-w-sm flex-col gap-3 sm:flex-row">
               <input
                 type="email"
                 placeholder="your@email.com"
-                className="flex-1 rounded-lg border border-input bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all duration-200"
+                className="flex-1 rounded-2xl border border-input bg-background px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               />
-              <button className="rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:shadow-md hover:shadow-accent/20">
+              <button className="rounded-2xl bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-accent/20">
                 Subscribe
               </button>
             </div>
           </motion.div>
 
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewport}
-            className="mt-12 text-center"
-          >
-            <p className="text-muted-foreground mb-4">Need help applying these ideas to your business?</p>
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={viewport} className="mt-12 text-center">
+            <p className="mb-4 text-muted-foreground">Need help applying these ideas to your business?</p>
             <Link
               to="/contact"
-              className="group inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:shadow-lg hover:shadow-accent/20 hover:-translate-y-0.5"
+              className="group inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent/20"
             >
               Talk to BluSapiens
               <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
