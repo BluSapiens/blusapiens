@@ -195,9 +195,11 @@ const BlogArticle = () => {
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
-              className="rounded-[2rem] border border-border/80 bg-card/95 p-6 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)] md:p-8 lg:p-10"
+              className="relative rounded-[2rem] border border-border/80 bg-card/95 p-6 shadow-[0_24px_70px_-45px_rgba(15,23,42,0.55)] md:p-8 lg:p-10 overflow-hidden"
             >
-              <div className="mb-10 flex flex-wrap items-center justify-between gap-4 rounded-[1.5rem] border border-border/70 bg-secondary/40 p-5">
+              <div className="absolute inset-0 opacity-[0.02] bg-[radial-gradient(circle_at_1px_1px,rgba(6,182,212,0.3)_1px,transparent_0)] bg-[length:20px_20px]" />
+              <div className="relative z-10">
+              <div className="mb-10 flex flex-wrap items-center justify-between gap-4 rounded-[1.5rem] border border-border/70 bg-gradient-to-r from-accent/5 via-secondary/40 to-primary/5 p-5 shadow-[0_8px_30px_-12px_rgba(6,182,212,0.15)]">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">Article snapshot</p>
                   <p className="mt-2 text-sm text-muted-foreground">
@@ -205,29 +207,41 @@ const BlogArticle = () => {
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 shadow-sm">
                     <Clock size={12} />
                     {post.readingTime}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 shadow-sm">
                     <Bookmark size={12} />
                     {post.category}
                   </span>
                 </div>
               </div>
 
-              <div className="article-content max-w-none">
+              <div className="article-content max-w-none prose prose-lg prose-slate dark:prose-invert mx-auto">
                 {post.headings.map((heading, index) => (
-                  <motion.div key={heading} variants={fadeUp} className="mb-10">
-                    <h2 id={`section-${index}`} data-index={index} className="scroll-mt-24">
-                      {heading}
-                    </h2>
-                    {post.body[index] ? <p>{post.body[index]}</p> : null}
+                  <motion.div key={heading} variants={fadeUp} className="mb-12 group">
+                    <div className="relative mb-6">
+                      <h2 id={`section-${index}`} data-index={index} className="scroll-mt-24 text-2xl font-bold leading-tight text-foreground group-hover:text-accent transition-colors duration-200">
+                        {heading}
+                      </h2>
+                      <div className="absolute -left-4 top-0 h-full w-1 bg-gradient-to-b from-accent/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    {post.body[index] ? (
+                      <p className={`leading-relaxed text-muted-foreground ${index === 0 ? 'first-letter:text-5xl first-letter:font-bold first-letter:text-accent first-letter:float-left first-letter:mr-2 first-letter:mt-1' : ''}`}>
+                        {post.body[index]}
+                      </p>
+                    ) : null}
+                    {index < post.headings.length - 1 && (
+                      <div className="mt-8 flex justify-center">
+                        <div className="h-px w-16 bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
+                      </div>
+                    )}
                   </motion.div>
                 ))}
 
                 {post.body.slice(post.headings.length).map((paragraph, index) => (
-                  <motion.p key={`extra-${index}`} variants={fadeUp}>
+                  <motion.p key={`extra-${index}`} variants={fadeUp} className="mb-6 leading-relaxed text-muted-foreground">
                     {paragraph}
                   </motion.p>
                 ))}
@@ -235,33 +249,38 @@ const BlogArticle = () => {
 
               {post.faqs && post.faqs.length > 0 ? (
                 <motion.div variants={fadeUp} className="mt-12 border-t border-border pt-8">
-                  <h2 className="mb-6 text-xl font-bold">Frequently Asked Questions</h2>
+                  <div className="mb-6 flex items-center gap-3">
+                    <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-accent">
+                      <Sparkles size={16} />
+                    </div>
+                    <h2 className="text-xl font-bold">Frequently Asked Questions</h2>
+                  </div>
                   <div className="space-y-4">
-                    {post.faqs.map((faq) => (
-                      <details key={faq.question} className="group overflow-hidden rounded-[1.25rem] border border-border bg-card">
+                    {post.faqs.map((faq, index) => (
+                      <motion.details key={faq.question} variants={fadeUp} className="group overflow-hidden rounded-[1.25rem] border border-border bg-gradient-to-r from-card to-secondary/20 shadow-sm transition-all duration-200 hover:shadow-md hover:border-accent/20">
                         <summary className="flex cursor-pointer items-center justify-between p-5 text-sm font-semibold transition-colors duration-200 hover:text-accent">
                           {faq.question}
                           <ChevronRight size={16} className="text-muted-foreground transition-transform duration-200 group-open:rotate-90" />
                         </summary>
                         <div className="px-5 pb-5 text-sm leading-relaxed text-muted-foreground">{faq.answer}</div>
-                      </details>
+                      </motion.details>
                     ))}
                   </div>
                 </motion.div>
               ) : null}
 
               <motion.div variants={fadeUp} className="mt-12 border-t border-border pt-8">
-                <div className="rounded-[1.5rem] border border-border/80 bg-secondary/35 p-6">
+                <div className="rounded-[1.5rem] border border-border/80 bg-gradient-to-br from-secondary/35 via-card to-accent/5 p-6 shadow-[0_8px_30px_-12px_rgba(6,182,212,0.1)]">
                   <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">About the author</p>
                   <div className="mt-4 flex gap-4">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent/20 to-primary/20 text-accent shadow-sm">
                       <span className="text-sm font-bold">{post.author.name.charAt(0)}</span>
                     </div>
                     <div>
                       <p className="text-sm font-semibold">{post.author.name}</p>
                       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{post.author.bio}</p>
                       {post.author.linkedin ? (
-                        <a href={post.author.linkedin} className="mt-2 inline-flex items-center gap-1 text-xs text-accent hover:underline">
+                        <a href={post.author.linkedin} className="mt-2 inline-flex items-center gap-1 text-xs text-accent hover:underline transition-colors duration-200">
                           <Linkedin size={12} />
                           LinkedIn
                         </a>
@@ -297,6 +316,7 @@ const BlogArticle = () => {
                     </p>
                   </Link>
                 ) : null}
+              </div>
               </div>
             </motion.article>
 

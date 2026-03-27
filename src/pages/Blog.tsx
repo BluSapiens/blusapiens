@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, BookOpen, Clock, Mail, Search, Sparkles, Tag } from "lucide-react";
@@ -46,6 +46,11 @@ const BlogCard = ({ post, featured = false }: { post: BlogPost; featured?: boole
                 <span className="rounded-full bg-accent/10 px-3 py-1 font-semibold uppercase tracking-[0.2em] text-accent">
                   {post.category}
                 </span>
+                {new Date().getTime() - new Date(post.publishDate).getTime() < 30 * 24 * 60 * 60 * 1000 ? (
+                  <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.13em] text-emerald-200">
+                    New
+                  </span>
+                ) : null}
                 <span className="rounded-full bg-secondary px-3 py-1 text-muted-foreground">
                   {new Date(post.publishDate).toLocaleDateString("en-US", {
                     month: "long",
@@ -94,26 +99,33 @@ const BlogCard = ({ post, featured = false }: { post: BlogPost; featured?: boole
     <motion.div variants={fadeUp}>
       <Link
         to={`/blog/${post.slug}`}
-        className="group flex h-full flex-col rounded-[1.5rem] border border-border/80 bg-card/95 p-6 shadow-[0_18px_55px_-38px_rgba(15,23,42,0.45)] transition-all duration-300 hover:-translate-y-1.5 hover:border-accent/30 hover:shadow-[0_26px_75px_-38px_rgba(6,182,212,0.3)]"
+        className="group flex h-full flex-col rounded-[1.5rem] border border-accent/40 bg-gradient-to-br from-slate-950/90 via-slate-900/80 to-zinc-900/80 p-6 shadow-[0_20px_80px_-42px_rgba(6,182,212,0.35)] transition-all duration-300 hover:-translate-y-1.5 hover:border-accent hover:shadow-[0_26px_90px_-42px_rgba(6,182,212,0.45)]"
       >
         <div className="mb-5 flex items-start justify-between gap-4">
           <div className="space-y-3">
-            <span className="inline-flex rounded-full bg-accent/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-accent">
-              {post.category}
-            </span>
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/15 to-primary/10 text-accent">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex rounded-full bg-cyan-500/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-cyan-300">
+                {post.category}
+              </span>
+              {new Date().getTime() - new Date(post.publishDate).getTime() < 30 * 24 * 60 * 60 * 1000 ? (
+                <span className="rounded-full bg-gradient-to-r from-emerald-700 to-emerald-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.13em] text-white shadow-lg shadow-emerald-900/40">
+                  New
+                </span>
+              ) : null}
+            </div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/20 to-primary/20 text-accent">
               <BookOpen size={18} />
             </div>
           </div>
-          <span className="rounded-full border border-border bg-background px-3 py-1 text-[11px] text-muted-foreground">
+          <span className="rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-[11px] text-accent">
             {new Date(post.publishDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
           </span>
         </div>
 
-        <h3 className="mb-3 text-lg font-bold leading-snug transition-colors duration-200 group-hover:text-accent">
+        <h3 className="mb-3 text-lg font-extrabold leading-snug text-white transition-all duration-200 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-accent group-hover:via-cyan-300 group-hover:to-indigo-300">
           {post.title}
         </h3>
-        <p className="mb-5 flex-1 text-sm leading-relaxed text-muted-foreground">{post.excerpt}</p>
+        <p className="mb-5 flex-1 text-sm leading-relaxed text-slate-300">{post.excerpt}</p>
 
         <div className="mb-5 flex flex-wrap gap-2">
           {post.tags.slice(0, 2).map((tag) => (
@@ -141,19 +153,75 @@ const BlogCard = ({ post, featured = false }: { post: BlogPost; featured?: boole
 const Blog = () => {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortOption, setSortOption] = useState<"Newest" | "Oldest" | "Fastest read" | "Longest read">("Newest");
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const featuredPost = blogPosts.find((post) => post.featured);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      setScrollProgress(progress);
+      setShowBackToTop(scrollTop > 450);
+    };
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const trendingPosts = useMemo(() => {
+    return [...blogPosts]
+      .sort((a, b) => {
+        const featuredScore = (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+        if (featuredScore !== 0) return featuredScore;
+        return new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime();
+      })
+      .slice(0, 6);
+  }, []);
 
   const filteredPosts = useMemo(() => {
     let posts = searchQuery ? searchPosts(searchQuery) : getPostsByCategory(activeCategory);
     if (featuredPost && !searchQuery && activeCategory === "All") {
       posts = posts.filter((post) => post.id !== featuredPost.id);
     }
-    return posts;
-  }, [activeCategory, searchQuery, featuredPost]);
+
+    const sorted = [...posts].sort((a, b) => {
+      if (sortOption === "Newest") {
+        return new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime();
+      }
+      if (sortOption === "Oldest") {
+        return new Date(a.publishDate).getTime() - new Date(b.publishDate).getTime();
+      }
+      const timeA = Number(a.readingTime.split(" ")[0]);
+      const timeB = Number(b.readingTime.split(" ")[0]);
+      if (sortOption === "Fastest read") {
+        return timeA - timeB;
+      }
+      if (sortOption === "Longest read") {
+        return timeB - timeA;
+      }
+      return 0;
+    });
+
+    return sorted;
+  }, [activeCategory, searchQuery, featuredPost, sortOption]);
 
   return (
     <PageLayout>
+      <div className="fixed inset-x-0 top-0 z-50 h-1 bg-white/10">
+        <div className="h-full bg-gradient-to-r from-cyan-300 via-indigo-300 to-purple-300 transition-all duration-150" style={{ width: `${scrollProgress}%` }} />
+      </div>
+      {showBackToTop && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-6 z-50 rounded-full bg-gradient-to-r from-cyan-400 to-indigo-400 px-4 py-3 text-xs font-semibold text-white shadow-lg shadow-cyan-500/40 transition hover:-translate-y-0.5 hover:shadow-xl"
+        >
+          Back to top
+        </button>
+      )}
+
       <section className="hero-bg relative overflow-hidden text-primary-foreground section-padding py-24 md:py-32">
         <div
           className="absolute inset-0 opacity-[0.06]"
@@ -195,6 +263,30 @@ const Blog = () => {
       </section>
 
       <section className="section-padding">
+        <div className="container-narrow mb-8">
+          <div className="overflow-hidden rounded-[1.75rem] border border-accent/25 bg-gradient-to-r from-cyan-700/80 via-indigo-700/75 to-purple-700/80 p-4 text-white">
+            <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-white">Trending articles</h3>
+            <div className="relative overflow-hidden">
+              <motion.div
+                className="flex items-center gap-3"
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+              >
+                {trendingPosts.concat(trendingPosts).map((post, i) => (
+                  <Link
+                    key={`${post.id}-${i}`}
+                    to={`/blog/${post.slug}`}
+                    className="inline-flex min-w-[260px] items-center justify-center whitespace-normal rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-bold text-white shadow-md shadow-cyan-900/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/20 hover:shadow-xl"
+                  >
+                    <span className="mr-2 inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                    {post.title}
+                  </Link>
+                ))}
+              </motion.div>
+            </div>
+          </div>
+        </div>
+
         <div className="container-narrow">
           <motion.div variants={fadeUp} initial="hidden" animate="visible" className="mb-10 rounded-[1.75rem] border border-border/80 bg-card/80 p-5 shadow-[0_18px_50px_-35px_rgba(15,23,42,0.4)] md:p-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -219,6 +311,43 @@ const Blog = () => {
                   className="w-full rounded-2xl border border-input bg-background pl-11 pr-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                <div className="rounded-full bg-secondary/40 px-3 py-1.5 font-semibold">
+                  Showing {filteredPosts.length} of {blogPosts.length} articles
+                </div>
+                <label className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1.5">
+                  Sort by
+                  <select
+                    value={sortOption}
+                    onChange={(event) => setSortOption(event.target.value as "Newest" | "Oldest" | "Fastest read" | "Longest read")}
+                    className="rounded-full border border-border bg-transparent px-2 py-1 text-xs outline-none focus:ring-2 focus:ring-accent"
+                  >
+                    <option value="Newest">Newest</option>
+                    <option value="Oldest">Oldest</option>
+                    <option value="Fastest read">Fastest read</option>
+                    <option value="Longest read">Longest read</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div variants={fadeUp} initial="hidden" animate="visible" className="mb-6">
+            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">Hot topics</div>
+            <div className="flex flex-wrap gap-2">
+              {["AI & Automation", "Product Strategy", "Cloud & Infrastructure", "Startup Growth"].map((topic) => (
+                <button
+                  key={topic}
+                  onClick={() => {
+                    setActiveCategory(topic);
+                    setSearchQuery("");
+                  }}
+                  className="rounded-full border border-border/60 px-3 py-1.5 text-xs font-medium bg-gradient-to-r from-accent/15 to-primary/10 text-accent transition hover:scale-[1.02]"
+                >
+                  #{topic}
+                </button>
+              ))}
             </div>
           </motion.div>
 
