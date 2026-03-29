@@ -39,13 +39,13 @@ const Navbar = () => {
       <nav className="container-wide flex items-center justify-between h-16 px-6 md:px-8 lg:px-12">
         <Link to="/" className="flex items-center gap-3" aria-label="BluSapiens home">
           <img
-            src="/blusapiens.svg"
+            src="/logo.png"
             alt="BluSapiens logo"
-            width={1184}
-            height={864}
-            className="logo-pixel h-16 w-auto shrink-0"
+            width={128}
+            height={128}
+            className="h-14 w-14 shrink-0 object-contain"
           />
-          <span className="font-heading font-bold text-xl text-foreground">
+          <span className="font-heading text-xl font-bold text-foreground">
             <span className="text-accent">Blu</span>Sapiens
           </span>
         </Link>
