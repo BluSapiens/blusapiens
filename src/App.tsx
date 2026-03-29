@@ -33,6 +33,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <Ga4PageTracker />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/about" element={<About />} />
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/services/:slug" element={<ServiceDetail />} />
           <Route path="/process" element={<Process />} />
           <Route path="/case-studies" element={<CaseStudies />} />
+          <Route path="/tools" element={<Tools />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogArticle />} />
           <Route path="/contact" element={<Contact />} />

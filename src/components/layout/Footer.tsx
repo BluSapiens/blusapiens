@@ -40,8 +40,17 @@ const Footer = () => {
       >
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <motion.div variants={fadeUp} className="md:col-span-2">
-            <Link to="/" className="font-heading font-bold text-xl">
-              <span className="text-accent">Blu</span>Sapiens
+            <Link to="/" className="inline-flex items-center gap-3" aria-label="BluSapiens home">
+              <img
+                src="/blusapiens.svg"
+                alt="BluSapiens logo"
+                width={1184}
+                height={864}
+                className="logo-pixel h-20 w-auto shrink-0"
+              />
+              <span className="font-heading font-bold text-xl">
+                <span className="text-accent">Blu</span>Sapiens
+              </span>
             </Link>
             <p className="mt-4 text-sm opacity-70 max-w-md leading-relaxed">
               Smarter technology for evolving businesses. We help companies adopt AI, automation, and modern digital technologies to improve efficiency, innovation, and growth.
