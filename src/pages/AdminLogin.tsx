@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { adminRequest, getAdminSession } from "@/lib/admin-auth";
+import { getAdminSession, loginAdmin } from "@/lib/admin-auth";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const AdminLogin = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [hasSession, setHasSession] = useState(false);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   useEffect(() => {
     let ignore = false;
@@ -49,24 +51,11 @@ const AdminLogin = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await adminRequest("/api/admin/login", {
-        method: "POST",
-        body: JSON.stringify({
-          email,
-          password
-        })
-      });
-
-      const payload = await response.json();
-
-      if (!response.ok) {
-        setErrorMessage(payload.message || "Admin login failed");
-        return;
-      }
+      await loginAdmin({ email, password });
 
       navigate("/admin", { replace: true });
-    } catch (_error) {
-      setErrorMessage("Unable to reach the admin server");
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unable to reach the admin server");
     } finally {
       setIsSubmitting(false);
     }
@@ -105,16 +94,26 @@ const AdminLogin = () => {
               <label htmlFor="password" className="mb-2 block text-sm font-medium text-slate-200">
                 Password
               </label>
-              <input
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-50 outline-none transition focus:border-cyan-400"
-                placeholder="Enter your admin password"
-                required
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={isPasswordVisible ? "text" : "password"}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 pr-12 text-sm text-slate-50 outline-none transition focus:border-cyan-400"
+                  placeholder="Enter your admin password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsPasswordVisible((value) => !value)}
+                  className="absolute inset-y-0 right-0 flex items-center px-4 text-slate-400 transition hover:text-slate-200"
+                  aria-label={isPasswordVisible ? "Hide password" : "Show password"}
+                >
+                  {isPasswordVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
             {errorMessage ? (
