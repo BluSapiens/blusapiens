@@ -14,7 +14,7 @@ const HeroSection = () => {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10"
         style={{ background: 'radial-gradient(circle, hsl(195 100% 50%), transparent 70%)' }} />
 
-      <div className="container-narrow section-padding relative z-10 py-28 md:py-36 lg:py-44">
+      <div className="container-narrow relative z-10 px-6 md:px-8 lg:px-12 pt-6 pb-16 md:pt-8 md:pb-20 lg:pt-10 lg:pb-24">
         <motion.div
           variants={heroStagger}
           initial="hidden"

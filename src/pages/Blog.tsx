@@ -93,6 +93,8 @@ export default function Blog() {
 
   const featured = postsQuery.data?.featured || null;
   const posts = postsQuery.data?.items || [];
+  const publishedCount = postsQuery.data?.meta.total ?? posts.length;
+  const trendingPosts = (featured ? [featured, ...posts.filter((post) => post.id !== featured.id)] : posts).slice(0, 6);
 
   return (
     <PageLayout>
@@ -110,7 +112,7 @@ export default function Blog() {
             </motion.p>
             <motion.div variants={heroChild} className="mt-10 flex flex-wrap items-center justify-center gap-3 text-sm">
               <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/80">
-                {blogPosts.length} published stories
+                {publishedCount} published stories
               </div>
               <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white/80">
                 AI, product, growth, and execution
@@ -124,29 +126,31 @@ export default function Blog() {
       </section>
 
       <section className="section-padding">
-        <div className="container-narrow mb-8">
-          <div className="overflow-hidden rounded-[1.75rem] border border-accent/25 bg-gradient-to-r from-cyan-700/80 via-indigo-700/75 to-purple-700/80 p-4 text-white">
-            <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-white">Trending articles</h3>
-            <div className="relative overflow-hidden">
-              <motion.div
-                className="flex items-center gap-3"
-                animate={{ x: ["0%", "-50%"] }}
-                transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-              >
-                {trendingPosts.concat(trendingPosts).map((post, i) => (
-                  <Link
-                    key={`${post.id}-${i}`}
-                    to={`/blog/${post.slug}`}
-                    className="inline-flex min-w-[260px] items-center justify-center whitespace-normal rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-bold text-white shadow-md shadow-cyan-900/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/20 hover:shadow-xl"
-                  >
-                    <span className="mr-2 inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
-                    {post.title}
-                  </Link>
-                ))}
-              </motion.div>
+        {trendingPosts.length > 0 ? (
+          <div className="container-narrow mb-8">
+            <div className="overflow-hidden rounded-[1.75rem] border border-accent/25 bg-gradient-to-r from-cyan-700/80 via-indigo-700/75 to-purple-700/80 p-4 text-white">
+              <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-white">Trending articles</h3>
+              <div className="relative overflow-hidden">
+                <motion.div
+                  className="flex items-center gap-3"
+                  animate={{ x: ["0%", "-50%"] }}
+                  transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                >
+                  {trendingPosts.concat(trendingPosts).map((post, i) => (
+                    <Link
+                      key={`${post.id}-${i}`}
+                      to={`/blog/${post.slug}`}
+                      className="inline-flex min-w-[260px] items-center justify-center whitespace-normal rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-bold text-white shadow-md shadow-cyan-900/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/20 hover:shadow-xl"
+                    >
+                      <span className="mr-2 inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                      {post.title}
+                    </Link>
+                  ))}
+                </motion.div>
+              </div>
             </div>
           </div>
-        </div>
+        ) : null}
 
         <div className="container-narrow">
           <div className="mb-8">

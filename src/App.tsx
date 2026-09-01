@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "@/components/ScrollToTop";
+import Ga4PageTracker from "@/components/analytics/Ga4PageTracker";
 import AdminLayout from "@/components/admin/AdminLayout";
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -18,6 +19,7 @@ import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import Contact from "./pages/Contact";
 import Careers from "./pages/Careers";
+import Tools from "./pages/Tools";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminResources from "./pages/admin/AdminResources";
 import AdminSettings from "./pages/admin/AdminSettings";
@@ -31,7 +33,12 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <ScrollToTop />
         <Ga4PageTracker />
         <Routes>

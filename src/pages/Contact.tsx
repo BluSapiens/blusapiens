@@ -120,15 +120,11 @@ const Contact = () => {
               <div className="space-y-4">
                 <a href="mailto:hello@blusapiens.com" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-accent transition-colors duration-200">
                   <Mail size={18} className="text-accent" />
-                  hello@blusapiens.com
-                </a>
-                <a href="#" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-accent transition-colors duration-200">
-                  <Linkedin size={18} className="text-accent" />
-                  LinkedIn
+                  arya@blusapiens.com
                 </a>
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <Clock size={18} className="text-accent" />
-                  Mon – Fri, 9:00 AM – 6:00 PM
+                  Mon – Sat, 9:00 AM – 9:00 PM
                 </div>
               </div>
             </div>

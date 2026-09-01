@@ -50,7 +50,7 @@ const ProcessSection = () => {
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 28, mass: 0.2 });
 
   return (
-    <section ref={sectionRef} className="section-padding">
+    <section ref={sectionRef} className="section-padding relative">
       <div className="container-narrow">
         <motion.div
           variants={fadeUp}
