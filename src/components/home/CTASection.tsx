@@ -27,7 +27,7 @@ const CTASection = () => {
             to="/contact"
             className="group inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:shadow-lg hover:shadow-accent/20 hover:-translate-y-0.5 active:translate-y-0 relative z-10"
           >
-            Book a Consultation
+            Book a Free Consultation
             <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
           </Link>
         </motion.div>

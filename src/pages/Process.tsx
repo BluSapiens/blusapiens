@@ -59,7 +59,7 @@ const Process = () => {
             <h2 className="text-3xl font-bold mb-4">Ready to start your project?</h2>
             <p className="text-muted-foreground mb-8 max-w-md mx-auto">Let's work together to build something exceptional.</p>
             <Link to="/contact" className="group inline-flex items-center gap-2 rounded-lg bg-accent px-7 py-3.5 text-sm font-semibold text-accent-foreground transition-all duration-200 hover:shadow-lg hover:shadow-accent/20 hover:-translate-y-0.5 active:translate-y-0">
-              Book a Consultation <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+              Book a Free Consultation <ArrowRight size={16} className="transition-transform duration-200 group-hover:translate-x-0.5" />
             </Link>
           </motion.div>
         </div>

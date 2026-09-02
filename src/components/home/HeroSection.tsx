@@ -47,7 +47,7 @@ const HeroSection = () => {
               to="/contact"
               className="inline-flex items-center gap-2 rounded-lg border border-primary-foreground/20 px-7 py-3.5 text-sm font-semibold transition-all duration-200 hover:bg-primary-foreground/5 hover:border-primary-foreground/30"
             >
-              Book a Consultation
+              Book a Free Consultation
             </Link>
           </motion.div>
         </motion.div>
